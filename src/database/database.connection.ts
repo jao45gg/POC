@@ -21,10 +21,3 @@ db.connect()
     });
 
 export default db;
-
-// export async function getPostById(id) {
-//     const client = await pool.connect();
-//     const data = pool.query(`SELECT id, user_id FROM posts WHERE id=$1`, [id]);
-//     client.release();
-//     return data;
-//   }
