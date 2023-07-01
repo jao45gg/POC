@@ -27,9 +27,26 @@ async function retrieveAllTravels() {
     }
 }
 
+async function ChangeTravel(setFields: string, setValues: (string | number)[]) {
+
+    const client = await db.connect();
+
+    const query = {
+        text: `UPDATE travels SET ${setFields} WHERE id = $${setValues.length}`,
+        values: setValues,
+    };
+
+    try {
+        await db.query(query);
+    } finally {
+        client.release();
+    }
+}
+
 const travelsRepositories = {
     retrieveAllTravels,
-    postNewTravel
+    postNewTravel,
+    ChangeTravel
 };
 
 export default travelsRepositories;
