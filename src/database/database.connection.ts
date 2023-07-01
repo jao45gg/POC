@@ -9,7 +9,6 @@ const configDatabase = {
     ssl: process.env.MODE === "prod",
 };
 
-console.log(process.env.DB_HOST);
 const db = new Pool(configDatabase);
 
 db.connect()
