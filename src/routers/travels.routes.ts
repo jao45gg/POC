@@ -9,5 +9,6 @@ const travelsRouter = Router();
 travelsRouter.get("/travels", travelsController.getTravels);
 travelsRouter.post("/travels", schemaValidator(travelSchema), travelsController.postTravel);
 travelsRouter.put("/travels/:id", schemaValidator(updatedTravelSchema), travelsController.updateTravels);
+travelsRouter.delete("/travels/:id", travelsController.deleteTravels);
 
 export default travelsRouter;

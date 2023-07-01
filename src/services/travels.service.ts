@@ -1,3 +1,4 @@
+import { invalidId } from "../errors/invalidId.error";
 import { newTravel, updateTravel } from "../protocols/travel.protocol";
 import travelsRepositories from "../repositories/travels.repository";
 
@@ -11,8 +12,10 @@ async function getAllTravels() {
 
 async function modifyTravel(travelId: number, updatedTravel: updateTravel) {
 
-    if (isNaN(travelId))
-        throw { message: "Invalid travel id" };
+    const travelExist = await travelsRepositories.findTravelById(travelId);
+
+    if (isNaN(travelId) || travelExist <= 0)
+        throw invalidId();
 
     const setFields = Object.keys(updatedTravel).map((key, index) => `${key} = $${index + 1}`).join(', ');
     const setValues = Object.values(updatedTravel);
@@ -21,10 +24,21 @@ async function modifyTravel(travelId: number, updatedTravel: updateTravel) {
     await travelsRepositories.ChangeTravel(setFields, setValues);
 }
 
+async function eraseTravels(travelId: number) {
+
+    const travelExist = await travelsRepositories.findTravelById(travelId);
+
+    if (isNaN(travelId) || travelExist <= 0)
+        throw invalidId();
+
+    await travelsRepositories.removeTravels(travelId);
+}
+
 const travelsServices = {
     getAllTravels,
     insertNewTravel,
-    modifyTravel
+    modifyTravel,
+    eraseTravels
 };
 
 export default travelsServices;

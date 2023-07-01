@@ -38,10 +38,26 @@ async function updateTravels(req: Request, res: Response) {
     }
 }
 
+async function deleteTravels(req: Request, res: Response) {
+    try {
+        
+        const travelId = Number(req.params.id);
+
+        await travelsServices.eraseTravels(travelId);
+
+        res.sendStatus(httpStatus.OK);
+        
+
+    } catch (err) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
+    }
+}
+
 const travelsController = {
     getTravels,
     postTravel,
-    updateTravels
+    updateTravels,
+    deleteTravels
 };
 
 export default travelsController;

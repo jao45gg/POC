@@ -43,10 +43,36 @@ async function ChangeTravel(setFields: string, setValues: (string | number)[]) {
     }
 }
 
+async function findTravelById(travelId: number) {
+    
+    const client = await db.connect();
+    let travels: QueryResult<travel>;
+
+    try {
+       travels = await db.query(`SELECT * FROM travels WHERE id = $1`, [travelId]);
+    } finally {
+        client.release();
+        return travels?.rowCount;
+    }
+}
+
+async function removeTravels(travelId: number) {
+    
+    const client = await db.connect();
+
+    try {
+        await db.query(`DELETE FROM travels WHERE id = $1`, [travelId]);
+    } finally {
+        client.release();
+    }
+}
+
 const travelsRepositories = {
     retrieveAllTravels,
     postNewTravel,
-    ChangeTravel
+    ChangeTravel, 
+    removeTravels,
+    findTravelById
 };
 
 export default travelsRepositories;
