@@ -1,6 +1,6 @@
 export function invalidId() {
     return {
-      type: "invalidId",
+      name: "invalidId",
       message: "Invalid Id"
     }
   }
