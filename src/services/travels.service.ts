@@ -13,22 +13,18 @@ async function getAllTravels() {
 async function modifyTravel(travelId: number, updatedTravel: updateTravel) {
 
     const travelExist = await travelsRepositories.findTravelById(travelId);
-
-    if (isNaN(travelId) || travelExist <= 0)
+ 
+    if (isNaN(travelId) || travelExist?.length <= 0)
         throw invalidId();
 
-    const setFields = Object.keys(updatedTravel).map((key, index) => `${key} = $${index + 1}`).join(', ');
-    const setValues = Object.values(updatedTravel);
-    setValues.push(travelId);
-
-    await travelsRepositories.ChangeTravel(setFields, setValues);
+    await travelsRepositories.ChangeTravel(travelId, updatedTravel);
 }
 
 async function eraseTravels(travelId: number) {
 
     const travelExist = await travelsRepositories.findTravelById(travelId);
 
-    if (isNaN(travelId) || travelExist <= 0)
+    if (isNaN(travelId) || travelExist?.length <= 0)
         throw invalidId();
 
     await travelsRepositories.removeTravels(travelId);

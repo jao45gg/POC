@@ -1,2 +1,2 @@
-# POC-TS
-Proof of Concept for TypeScript
+# POC
+Proof of Concept for TypeScript and Prisma

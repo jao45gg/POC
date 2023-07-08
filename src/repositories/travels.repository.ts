@@ -1,76 +1,90 @@
-import { Query, QueryResult } from "pg";
+import { QueryResult } from "pg";
 import db from "../database/database.connection";
-import { newTravel, travel } from "../protocols/travel.protocol";
+import { newTravel, travel, updateTravel } from "../protocols/travel.protocol";
+import { travels } from "@prisma/client";
 
 async function postNewTravel(travel: newTravel) {
 
-    const client = await db.connect();
+    await db.$connect();
 
     try {
-        await db.query(`INSERT INTO travels (origin, destiny, shipping_cost) VALUES ($1, $2, $3)`,
-            [travel.origin, travel.destiny, travel.shipping_cost]);
+        await db.travels.create({
+            data: {
+                origin: travel.origin,
+                destiny: travel.destiny,
+                shipping_cost: travel.shipping_cost
+            }
+        })
     } finally {
-        client.release();
+        await db.$disconnect();;
     }
 }
 
 async function retrieveAllTravels() {
 
-    const client = await db.connect();
-    let travels: QueryResult<travel>;
+    await db.$connect();
+    let travels: travels[];
 
     try {
-        travels = await db.query<travel>(`SELECT * FROM travels`);
+        travels = await db.travels.findMany();
     } finally {
-        client.release();
-        return travels.rows;
+        await db.$disconnect();;
+        return travels;
     }
 }
 
-async function ChangeTravel(setFields: string, setValues: (string | number)[]) {
+async function ChangeTravel(travelId: number, updatedTravel: updateTravel) {
 
-    const client = await db.connect();
-
-    const query = {
-        text: `UPDATE travels SET ${setFields} WHERE id = $${setValues.length}`,
-        values: setValues,
-    };
+    await db.$connect();
 
     try {
-        await db.query(query);
+        await db.travels.update({
+            where: {
+                id: travelId
+            },
+            data: updatedTravel
+        });
     } finally {
-        client.release();
+        await db.$disconnect();;
     }
 }
 
 async function findTravelById(travelId: number) {
-    
-    const client = await db.connect();
-    let travels: QueryResult<travel>;
+
+    await db.$connect();
+    let travels: travels[];
 
     try {
-       travels = await db.query(`SELECT * FROM travels WHERE id = $1`, [travelId]);
+        travels = await db.travels.findMany({
+            where: {
+                id: travelId
+            }
+        });
     } finally {
-        client.release();
-        return travels?.rowCount;
+        await db.$disconnect();;
+        return travels;
     }
 }
 
 async function removeTravels(travelId: number) {
-    
-    const client = await db.connect();
+
+    await db.$connect();
 
     try {
-        await db.query(`DELETE FROM travels WHERE id = $1`, [travelId]);
+        await db.travels.deleteMany({
+            where: {
+                id: travelId
+            }
+        });
     } finally {
-        client.release();
+        await db.$disconnect();;
     }
 }
 
 const travelsRepositories = {
     retrieveAllTravels,
     postNewTravel,
-    ChangeTravel, 
+    ChangeTravel,
     removeTravels,
     findTravelById
 };
